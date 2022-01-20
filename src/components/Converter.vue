@@ -75,13 +75,12 @@ export default {
   },
   methods: {
     validateInput() {
-      console.log(this.staGPA);
       if (this.staGPA === "") {
         this.state = "hidden";
       } else if (isNaN(this.staGPA)) {
         this.state = "nan";
       } else {
-        this.staGPA = Number(this.staGPA);
+        this.staGPA = this.round(Number(this.staGPA), 1);
         if (this.staGPA < 7) {
           this.state = "lowGPA";
         } else if (this.staGPA > 20) {
@@ -122,8 +121,6 @@ export default {
       return this.calcRange(lb, ub);
     },
     calcStAndrewsRange(idx) {
-      console.log(idx);
-      console.log(this.conversion[idx]);
       let lb = this.conversion[idx].stALB;
       let ub = this.conversion[idx].stAUB;
       return this.calcRange(lb, ub);
@@ -131,8 +128,9 @@ export default {
     calcRange(lb, ub) {
       return ub - lb;
     },
-    round(num) {
-      return Math.round((num + Number.EPSILON) * 100) / 100;
+    round(num, d) {
+      let exp = Math.pow(10, d);
+      return Math.round((num + Number.EPSILON) * exp) / exp;
     },
   },
   data: function () {
