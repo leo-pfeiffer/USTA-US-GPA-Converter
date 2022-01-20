@@ -62,6 +62,14 @@
         </tr>
       </tbody>
     </table>
+    <p>
+      ℹ️ If your GPA can fall in two classification, the converter assumes the
+      higher (better) classification. For example, if your GPA is 16.2, the
+      converter assumes a 2:1, instead of a 2:2. This could give incorrect
+      results in case your median grade is actually in the lower category. I
+      might implement this at some point in the future (but now I should get
+      back to studying...)
+    </p>
     <hr />
   </div>
 </template>
@@ -105,8 +113,6 @@ export default {
       let quotient = dist / stARange;
 
       let result = this.conversion[idx].USLB + quotient * usRange;
-
-      console.log(idx, stARange, usRange, dist, quotient, result);
 
       return result;
     },
