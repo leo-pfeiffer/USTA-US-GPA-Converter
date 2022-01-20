@@ -76,7 +76,7 @@ export default {
 }
 
 img {
-  max-width: 30%;
+  max-width: 200px;
   min-width: 75px;
 }
 </style>
