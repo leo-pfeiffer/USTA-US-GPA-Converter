@@ -21,7 +21,7 @@
     />
     <p v-if="state === 'show'">
       Your St Andrews GPA of {{ staGPA }} corresponds to a US GPA of
-      {{ round(convertToUS(Number(staGPA))) }}.
+      {{ round(convertToUS(Number(staGPA)), 2) }}.
     </p>
     <p v-if="state === 'nan'">Please enter a valid GPA between 7 and 20.</p>
     <p v-if="state === 'lowGPA'">
@@ -104,7 +104,11 @@ export default {
       let dist = gpa - this.conversion[idx].stALB;
       let quotient = dist / stARange;
 
-      return this.conversion[idx].USLB + quotient * usRange;
+      let result = this.conversion[idx].USLB + quotient * usRange;
+
+      console.log(idx, stARange, usRange, dist, quotient, result);
+
+      return result;
     },
     getConversionIndex(gpa) {
       for (let c in this.conversion) {
