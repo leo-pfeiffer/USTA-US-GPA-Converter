@@ -62,6 +62,9 @@ export default {
       ],
     };
   },
+  created() {
+    document.title = "St Andrews GPA Converter";
+  },
 };
 </script>
 
