@@ -162,6 +162,7 @@ table {
   margin: 0 10px;
   text-align: right;
   overflow-x: auto;
+  max-width: 100%;
   white-space: nowrap;
 }
 th,
