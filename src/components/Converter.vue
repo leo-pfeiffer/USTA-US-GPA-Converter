@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h3>{{ msg }}</h3>
     <p>
       The conversion scale as provided by the University of St Andrews can be
       found
@@ -11,6 +11,25 @@
         >here</a
       >.
     </p>
+    <hr />
+    <p>Please enter your St Andrews GPA:</p>
+    <input
+      v-model="staGPA"
+      @input="validateInput"
+      type="number"
+      placeholder="St Andrews GPA"
+    />
+    <p v-if="state === 'show'">
+      Your St Andrews GPA of {{ staGPA }} corresponds to a US GPA of
+      {{ round(convertToUS(Number(staGPA))) }}.
+    </p>
+    <p v-if="state === 'nan'">Please enter a valid GPA between 7 and 20.</p>
+    <p v-if="state === 'lowGPA'">
+      Your GPA must be higher than 7 for the conversion.
+    </p>
+    <p v-if="state === 'hidden'"></p>
+    <p v-if="state === 'highGPA'">Your GPA cannot exceed 20.</p>
+    <hr />
     <table>
       <thead>
         <col />
@@ -43,23 +62,6 @@
         </tr>
       </tbody>
     </table>
-    <hr />
-    <p>Please enter your St Andrews GPA:</p>
-    <input
-      v-model="staGPA"
-      @input="validateInput"
-      type="number"
-      placeholder="St Andrews GPA"
-    />
-    <p v-if="state === 'show'">
-      Your St Andrews GPA of {{ staGPA }} corresponds to a US GPA of
-      {{ round(convertToUS(Number(staGPA))) }}.
-    </p>
-    <p v-if="state === 'nan'">Please enter a valid GPA between 7 and 20.</p>
-    <p v-if="state === 'lowGPA'">
-      Your GPA must be higher than 7 for the conversion.
-    </p>
-    <p v-if="state === 'highGPA'">Your GPA cannot exceed 20.</p>
     <hr />
   </div>
 </template>
@@ -159,6 +161,8 @@ table {
   display: inline-block;
   margin: 0 10px;
   text-align: right;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 th,
 td {
