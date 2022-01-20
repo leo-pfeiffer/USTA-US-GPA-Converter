@@ -66,7 +66,7 @@
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "Converter",
   props: {
     msg: String,
     conversion: Array,

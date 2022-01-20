@@ -1,6 +1,6 @@
 <template>
-  <img alt="Vue logo" src="./assets/crest.png" />
-  <HelloWorld
+  <img alt="University of St Andrews Crest" src="./assets/crest.png" />
+  <Converter
     :msg="'University of St Andrews degree classification to US GPA conversion'"
     :conversion="[
       {
@@ -43,11 +43,11 @@
 </template>
 
 <script>
-import HelloWorldVue from "./components/HelloWorld.vue";
+import ConverterVue from "./components/Converter.vue";
 export default {
   name: "App",
   components: {
-    HelloWorld: HelloWorldVue,
+    Converter: ConverterVue,
   },
   data: function () {
     return {
