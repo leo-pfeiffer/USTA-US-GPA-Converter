@@ -62,14 +62,16 @@
         </tr>
       </tbody>
     </table>
-    <p>
-      ℹ️ If your GPA falls into two classifications, the converter assumes the
-      higher (better) classification. For example, if your GPA is 13.2, the
-      converter assumes a 2:1, instead of a 2:2. This could give incorrect
-      results in case your median grade is actually in the lower category. I
-      might implement this at some point in the future (but now I should get
-      back to studying...)
-    </p>
+    <div style="justify-content: center; display: flex">
+      <p style="width: 80%">
+        ℹ️ If your GPA falls into two classifications, the converter assumes the
+        higher (better) classification. For example, if your GPA is 13.2, the
+        converter assumes a 2:1, instead of a 2:2. This could give incorrect
+        results in case your median grade is actually in the lower category. I
+        might implement this at some point in the future (but now I should get
+        back to studying...)
+      </p>
+    </div>
     <hr />
   </div>
 </template>
