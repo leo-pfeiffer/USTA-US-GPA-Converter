@@ -19,9 +19,16 @@
       type="number"
       placeholder="St Andrews GPA"
     />
+    <br>
+    <input
+        v-model="staMedian"
+        @input="validateInput"
+        type="number"
+        placeholder="St Andrews Median"
+    />
     <p v-if="state === 'show'">
       Your St Andrews GPA of {{ staGPA }} corresponds to a US GPA of
-      {{ round(convertToUS(Number(staGPA)), 2) }}.
+      {{ round(convertToUS(), 2) }}.
     </p>
     <p v-if="state === 'nan'">Please enter a valid GPA between 7 and 20.</p>
     <p v-if="state === 'lowGPA'">
@@ -31,10 +38,12 @@
     <p v-if="state === 'highGPA'">Your GPA cannot exceed 20.</p>
     <hr />
     <table>
-      <thead>
+      <colgroup>
         <col />
-        <colgroup span="2"></colgroup>
-        <colgroup span="2"></colgroup>
+        <col span="2"/>
+        <col span="2"/>
+      </colgroup>
+      <thead>
         <tr>
           <th></th>
           <th colspan="2" scope="colgroup">St Andrews GPA range</th>
@@ -64,12 +73,10 @@
     </table>
     <div style="justify-content: center; display: flex">
       <p style="width: 80%">
-        ℹ️ If your GPA falls into two classifications, the converter assumes the
-        higher (better) classification. For example, if your GPA is 13.2, the
-        converter assumes a 2:1, instead of a 2:2. This could give incorrect
-        results in case your median grade is actually in the lower category. I
-        might implement this at some point in the future (but now I should get
-        back to studying...)
+        ℹ️ If your GPA falls between two classifications (e.g. 13 is part of both 2:2 and 2:1),
+        the classification is determined based on the median. The lower classification is chosen
+        if the median falls into the lower classification, otherwise the higher one is chosen.
+        If you don't specify the median, the higher classification is chosen.
       </p>
     </div>
     <hr />
@@ -85,27 +92,30 @@ export default {
   },
   methods: {
     validateInput() {
-      if (this.staGPA === "") {
+      let hasMedian = (this.staMedian !== "")
+      if ((this.staGPA === "")) {
         this.state = "hidden";
-      } else if (isNaN(this.staGPA)) {
+      } else if (isNaN(this.staGPA) || (hasMedian && isNaN(this.staMedian))) {
         this.state = "nan";
       } else {
         this.staGPA = this.round(Number(this.staGPA), 1);
-        if (this.staGPA < 7) {
+        this.staMedian = hasMedian ? this.round(Number(this.staMedian), 1) : '';
+        if (this.staGPA < 7 || (hasMedian && this.staMedian < 7)) {
           this.state = "lowGPA";
-        } else if (this.staGPA > 20) {
+        } else if (this.staGPA > 20 || (hasMedian && this.staMedian > 20)) {
           this.state = "highGPA";
         } else {
           this.state = "show";
         }
       }
-      return;
     },
-    convertToUS(gpa) {
+    convertToUS() {
+      let gpa = this.staGPA === '' ? Number.NaN : Number(this.staGPA)
+      let median = this.staMedian === '' ? Number.NaN : Number(this.staMedian)
       if (isNaN(gpa)) {
         return;
       }
-      let idx = this.getConversionIndex(gpa);
+      let idx = this.getConversionIndex(gpa, median);
       if (idx === -1) {
         return;
       }
@@ -114,18 +124,43 @@ export default {
       let dist = gpa - this.conversion[idx].stALB;
       let quotient = dist / stARange;
 
-      let result = this.conversion[idx].USLB + quotient * usRange;
-
-      return result;
+      return this.conversion[idx].USLB + quotient * usRange;
     },
-    getConversionIndex(gpa) {
-      for (let c in this.conversion) {
+    getConversionIndices(gpa) {
+      let indexes = []
+      for (let c = 0; c < this.conversion.length; c++) {
         let cls = this.conversion[c];
         if (cls.stALB <= gpa && gpa <= cls.stAUB) {
-          return c;
+          indexes.push(c)
         }
       }
-      return -1;
+      return indexes
+    },
+    getConversionIndex(gpa, median) {
+      let gpaIdx = this.getConversionIndices(gpa)
+
+      // unambiguous result based on GPA
+      if (gpaIdx.length === 0) {
+        return -1
+      } else if (gpaIdx.length === 1) {
+        return gpaIdx[0]
+      } else if (gpaIdx.length > 2) {
+        console.error("GPA falls in more than 2 classifications")
+        return -1
+      }
+
+      // consider median
+      if (median === '' || isNaN(median)) {
+        return gpaIdx[0] // median not specified, use GPA result
+      }
+      let medIdx = this.getConversionIndices(median)
+      if (medIdx.length === 0) {
+        return -1
+      } else if (medIdx.length > 2) {
+        console.error("Median falls in none or more than 2 classifications")
+        return -1
+      }
+      return medIdx[medIdx.length-1] > gpaIdx[0] ? gpaIdx[1] : gpaIdx[0]  // get best result from median
     },
     calcUSRange(idx) {
       let lb = this.conversion[idx].USLB;
@@ -148,6 +183,7 @@ export default {
   data: function () {
     return {
       staGPA: "",
+      staMedian: "",
       state: "hidden",
     };
   },
